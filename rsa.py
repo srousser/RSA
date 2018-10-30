@@ -1,10 +1,10 @@
 """
-- CS2911 - 0NN
-- Fall 2017
-- Lab N
+- CS2911 - 021
+- Fall 2018
+- Lab 08
 - Names:
-  -
-  -
+  - Austin Rovge
+  - Sam Rousser
 
 16-bit RSA
 """
@@ -29,7 +29,7 @@ def main():
                    "(3-VC) verify_checksum\n"
                    "(4-EM) encrypt_message\n"
                    "(5-DM) decrypt_message\n"
-                   "(6-BK) break_key\n "
+                   "(6-BK) break_key\n"
                    "Please enter the option you want:\n")
     # Execute the chosen operation.
     if action in ['1', 'CK', 'ck', 'create_keys']:
@@ -126,7 +126,7 @@ def decrypt_message_interactive(priv = None):
         enc_string = encrypted[i:i + 4]
         enc = int(enc_string, 16)
         dec = apply_key(priv, enc)
-        if dec >= 0 and dec < 256:
+        if 0 <= dec < 256:
             message += chr(dec)
         else:
             print('Warning: Could not decode encrypted entity: ' + enc_string)
@@ -158,7 +158,7 @@ def enter_public_key_interactive():
     print('(Using public exponent = ' + str(PUBLIC_EXPONENT) + ')')
     string_modulus = input('Please enter the modulus (decimal): ')
     modulus = int(string_modulus)
-    return (PUBLIC_EXPONENT, modulus)
+    return PUBLIC_EXPONENT, modulus
 
 
 def enter_key_interactive(key_type):
@@ -173,7 +173,7 @@ def enter_key_interactive(key_type):
     exponent = int(string_exponent)
     string_modulus = input('Please enter the modulus (decimal): ')
     modulus = int(string_modulus)
-    return (exponent, modulus)
+    return exponent, modulus
 
 
 def compute_checksum(string):
@@ -369,7 +369,7 @@ def get_public_key(key_pair):
     :return: (e,n)
     """
 
-    return (key_pair[0], key_pair[2])
+    return key_pair[0], key_pair[2]
 
 
 def get_private_key(key_pair):
@@ -381,7 +381,8 @@ def get_private_key(key_pair):
     :return: (d,n)
     """
 
-    return (key_pair[1], key_pair[2])
+    return key_pair[1], key_pair[2]
 
 
-main()
+if __name__ == '__main__':
+    main()
