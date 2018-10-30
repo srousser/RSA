@@ -113,7 +113,7 @@ def encrypt_message_interactive():
     print("Encrypted message:", encrypted)
 
 
-def decrypt_message_interactive(priv = None):
+def decrypt_message_interactive(priv=None):
     """
     Decrypt a message
     """
