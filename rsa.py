@@ -3,8 +3,8 @@
 - Fall 2017
 - Lab N
 - Names:
-  -
-  -
+  - Austin Rovge
+  - Sam Rousser
 
 16-bit RSA
 """
@@ -216,23 +216,26 @@ def create_keys():
 
     :return: the keys as a three-tuple: (e,d,n)
     """
-    p = 193
-    q = 199
+    p = create_prime()
+    while not gcd(p -1, PUBLIC_EXPONENT) == 1:
+        p = create_prime()
+    q = create_prime()
+    while not gcd(q-1, PUBLIC_EXPONENT) == 1:
+        q = create_prime()
 
     n = p * q
-    tot = phi(p, q)
+    z = phi(p, q)
+    d = multiplicative_inverse(PUBLIC_EXPONENT, z)
+    return PUBLIC_EXPONENT, d, n
 
-    # Choose an integer e such that e and phi(n) are coprime
-    e = random.randrange(1, tot)
 
-    g = gcd(e, tot)
-    while g != 1:
-        e = random.randrange(1, tot)
-        g = gcd(e, tot)
+def create_prime():
+    p = random.randint(0, 64)
+    p = p | 0b11000001
+    while not is_prime_number(p) & p < 255:
+        p += 2
 
-    d = multiplicative_inverse(e, tot)
-
-    return e, d, n
+    return p
 
 
 def phi(a, b):
@@ -253,16 +256,6 @@ def gcd(a, b):
     while b != 0:
         a, b = b, a % b
     return a
-
-
-def large_prime():
-    """
-    Generate a random prime number between MIN_PRIME and MAX_PRIME
-
-    :return: The randomly generated prime number
-    """
-
-    # TODO
 
 
 def is_prime_number(x):
@@ -318,8 +311,6 @@ def apply_key(key, m):
              and returns the ciphertext.
     """
     k, n = key
-    print(n)
-    print(m)
     ctext = pow(m, k, n)
     return ctext
 
