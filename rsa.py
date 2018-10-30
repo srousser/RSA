@@ -340,7 +340,7 @@ def find_factor(mod):
     :return: The factor
     """
     root = math.floor(math.sqrt(mod))
-    while mod % root != 0:
+    while mod % root != 0 & root != 1:
         root -= 2
 
     return root
