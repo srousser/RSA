@@ -220,16 +220,15 @@ def create_keys():
     prime_list = get_prime_list()
     p = -1
     q = -1
-    z = -1
-    d = ""
+    n = 0
 
-    while p == q or type(d) is str:
+    while p == q or (p - 1) % PUBLIC_EXPONENT == 0 or (q - 1) % PUBLIC_EXPONENT == 0:
         p = prime_list[random.randint(0, len(prime_list) - 1)]
         q = prime_list[random.randint(0, len(prime_list) - 1)]
-        z = get_totient(p, q)
-        d = get_priv_exp(PUBLIC_EXPONENT, z)
 
     n = p * q
+    z = get_totient(p, q)
+    d = get_priv_exp(PUBLIC_EXPONENT, z)
 
     return PUBLIC_EXPONENT, d, n
 
