@@ -215,43 +215,54 @@ def create_keys():
     Create the public and private keys.
 
     :return: the keys as a three-tuple: (e,d,n)
+    :author: Austin Rovge
     """
-    p = create_prime()
-    while not gcd(p -1, PUBLIC_EXPONENT) == 1:
-        p = create_prime()
-    q = create_prime()
-    while not gcd(q-1, PUBLIC_EXPONENT) == 1:
-        q = create_prime()
+    prime_list = get_prime_list()
+    p = -1
+    q = -1
+
+    while p == q:
+        p = prime_list[random.randint(0, len(prime_list) - 1)]
+        q = prime_list[random.randint(0, len(prime_list) - 1)]
 
     n = p * q
-    z = phi(p, q)
-    d = multiplicative_inverse(PUBLIC_EXPONENT, z)
+    z = get_totient(p, q)
+    d = get_priv_exp(PUBLIC_EXPONENT, z)
     return PUBLIC_EXPONENT, d, n
 
 
-def create_prime():
-    p = random.randint(0, 64)
-    p = p | 0b11000001
-    while not is_prime_number(p) & p < 255:
-        p += 2
+def get_prime_list():
+    """
+    This method calculates a prime list from min to max value.
+    :return: list of primes
+    :author: Austin Rovge
+    """
+    primes = []
+    for x in range(MIN_PRIME, MAX_PRIME):
+        if is_prime_number(x):
+            primes.append(x)
 
-    return p
+    return primes
 
 
-def phi(a, b):
+def get_totient(p, q):
     """
     Compute the totient of two numbers
-
-    :return: The totient
+    :param p: first prime num
+    :param q: second prime num
+    :return: the totient
+    :author: Sam Rousser
     """
-    return (a - 1) * (b - 1)
+    return (p - 1) * (q - 1)
 
 
 def gcd(a, b):
     """
     Check the greatest common denominator of two numbers
-
+    :param a: first num
+    :param b: second number
     :return: The gcd
+    :author: Sam Rousser
     """
     while b != 0:
         a, b = b, a % b
@@ -263,6 +274,7 @@ def is_prime_number(x):
     Check if a number is prime
 
     :return: True if prime, otherwise false
+    :author: Sam Rousser
     """
     if x >= 2:
         for y in range(2, x):
@@ -274,16 +286,17 @@ def is_prime_number(x):
     return True
 
 
-def multiplicative_inverse(a, n):
+def get_priv_exp(e, z):
     """
     Euclid's extended algorithm for finding the multiplicative inverse of two numbers
 
-    :return: The inverse
+    :return: The private exponent
+    :author: Sam Rousser
     """
     t = 0
-    r = n
+    r = z
     newt = 1
-    newr = a
+    newr = e
 
     while newr != 0:
         quotient = r // newr
@@ -292,8 +305,9 @@ def multiplicative_inverse(a, n):
 
     if r > 1:
         return "a is not invertible"
+
     if t < 0:
-        t += n
+        t += z
 
     return t
 
@@ -309,10 +323,11 @@ def apply_key(key, m):
     :return: the message with the key applied. For example,
              if given the public key and a message, encrypts the message
              and returns the ciphertext.
+    :author: Sam Rousser
     """
     k, n = key
-    ctext = pow(m, k, n)
-    return ctext
+    cipher_text = (m**k) % n
+    return cipher_text
 
 
 def break_key(pub):
@@ -325,25 +340,28 @@ def break_key(pub):
 
     :param pub: a tuple containing the public key (e,n)
     :return: a tuple containing the private key (d,n)
+    :author: Sam Rousser
     """
     e, n = pub
-    p = find_factor(n)
-    q = n / p
-    d = pow(e, -1) % phi(p, q)
+    p, q = find_factor(n)
+    z = get_totient(p, q)
+    d = get_priv_exp(e, z)
     return d, n
 
 
-def find_factor(mod):
+def find_factor(n):
     """
     Find the smaller factor of a non-even number
-
-    :return: The factor
+    :param n: modulus to find factor of
+    :return: factor as a tuple
+    :author: Austin Rovge
     """
-    root = math.floor(math.sqrt(mod))
-    while mod % root != 0 & root != 1:
-        root -= 2
+    prime_list = get_prime_list()
 
-    return root
+    for p in prime_list:
+        for q in prime_list:
+            if p*q == n:
+                return p, q
 
 
 # ---------------------------------------
