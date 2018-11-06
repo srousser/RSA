@@ -220,14 +220,17 @@ def create_keys():
     prime_list = get_prime_list()
     p = -1
     q = -1
+    z = -1
+    d = ""
 
-    while p == q:
+    while p == q or type(d) is str:
         p = prime_list[random.randint(0, len(prime_list) - 1)]
         q = prime_list[random.randint(0, len(prime_list) - 1)]
+        z = get_totient(p, q)
+        d = get_priv_exp(PUBLIC_EXPONENT, z)
 
     n = p * q
-    z = get_totient(p, q)
-    d = get_priv_exp(PUBLIC_EXPONENT, z)
+
     return PUBLIC_EXPONENT, d, n
 
 
@@ -254,19 +257,6 @@ def get_totient(p, q):
     :author: Sam Rousser
     """
     return (p - 1) * (q - 1)
-
-
-def gcd(a, b):
-    """
-    Check the greatest common denominator of two numbers
-    :param a: first num
-    :param b: second number
-    :return: The gcd
-    :author: Sam Rousser
-    """
-    while b != 0:
-        a, b = b, a % b
-    return a
 
 
 def is_prime_number(x):
